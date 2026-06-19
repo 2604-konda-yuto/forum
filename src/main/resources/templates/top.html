@@ -35,7 +35,7 @@
                 <div th:if="${comment.messageId == content.id}">
                     <form th:method="post" th:action="@{/reply/{messageId}(messageId=${comment.message_id})}" th:object="${formModel}">
                         <div class="form-area">
-                            <textarea class="tweet-box" th:field="*{comment}" size="20" maxlength="200" /></textarea><br/>
+                            <textarea class="tweet-box" th:field="*{content}" size="20" maxlength="200" /></textarea><br/>
                             <input type="submit" value="返信" />
                         </div>
                     </form>

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -34,6 +35,7 @@ public class CommentService {
             Comment result = results.get(i);
             comment.setId(result.getId());
             comment.setContent(result.getContent());
+            comment.setMessageId(result.getMessage_id());
             comments.add(comment);
         }
         return comments;
@@ -42,22 +44,35 @@ public class CommentService {
     /*
      * 返信処理
      */
-    public CommentForm replyReport(Integer messageId) {
-        Comment reply = setCommentEntity(replyReport(messageId));
-        //findById キーに該当するレコードを取得
-        commentRepository.findById(messageId);
-        return replyReport(messageId);
+    public CommentForm replyReport(Integer messageId, Integer id, String content) {
+
+        //Repositoryに探しに行った結果を詰める
+        Comment results = commentRepository.findById();
+
+        //上記をComment replyに詰め替え
+        Comment reply = results;
+
+        //l.27から取り出す
+        CommentForm form = setCommentForm(results);
+
+        //他必要な情報をセットする
+        form.setId(id);
+        form.setContent(content);
+        form.setMessageId(messageId);
+
+        return form;
+
     }
 
     /*
      * リクエストから取得した情報をEntityに設定
      */
-    private Comment setCommentEntity(CommentForm reqReport) {
-        Comment comment = new Comment();
-        comment.setId(reqReport.getId());
-        comment.setContent(reqReport.getContent());
-        comment.setMessage_id(reqReport.getMessage_id());
-        return comment;
-    }
+//    private Comment setCommentEntity(CommentForm reqReport) {
+//        Comment comment = new Comment();
+//        comment.setId(reqReport.getId());
+//        comment.setContent(reqReport.getContent());
+//        comment.setMessage_id(reqReport.getMessageId());
+//        return comment;
+//    }
 
 }

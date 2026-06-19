@@ -2,6 +2,7 @@ package com.example.forum.controller;
 
 import com.example.forum.controller.form.CommentForm;
 import com.example.forum.controller.form.ReportForm;
+import com.example.forum.repository.entity.Comment;
 import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,7 @@ public class ForumController {
      * 返信投稿処理
      */
     @PostMapping("/reply/{messageId}")
-    public ModelAndView replyContent(@PathVariable Integer messageId,
+    public ModelAndView replyContent(@PathVariable Integer messageId, Integer id, String content,
                                      @ModelAttribute("formModel") CommentForm report) {
         //@PathVariableで動的な値を取得
         //@ModelAttributeでHttpリクエストのパラメータ(フォームデータなど)を
@@ -114,9 +115,9 @@ public class ForumController {
 
         ModelAndView mav = new ModelAndView();
         //Controller上でFormにセット
-        CommentForm comment = commentService.replyReport(messageId);
+        CommentForm comment = commentService.replyReport(messageId, id, content);
         // 投稿をテーブルに格納
-        mav.addObject("formModel", comment);
+        mav.addObject("formModel", report);
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
