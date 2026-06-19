@@ -3,6 +3,8 @@ package com.example.forum.controller.form;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 public class CommentForm {
@@ -10,4 +12,6 @@ public class CommentForm {
     private int id;
     private String content;
     private int message_id;
+    private Date created_date;
+    private Date updated_date;
 }

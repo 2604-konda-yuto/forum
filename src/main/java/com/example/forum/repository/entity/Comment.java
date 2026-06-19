@@ -4,19 +4,27 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "comment")
 @Getter
 @Setter
 public class Comment {
     @Id
-    @Column(insertable = false)
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(insertable = false)
+    @Column
     private String content;
 
-    @Column(insertable = false)
+    @Column
     private int message_id;
+
+    @Column(name = "created_date", insertable = true,updatable = false)
+    private Date created_date;
+
+    @Column(name = "updated_date", insertable = false,updatable = false)
+    private Date updated_date;
 }

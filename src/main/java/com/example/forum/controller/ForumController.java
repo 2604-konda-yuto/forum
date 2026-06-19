@@ -26,10 +26,12 @@ public class ForumController {
         ModelAndView mav = new ModelAndView();
         // 投稿を全件取得
         List<ReportForm> contentData = reportService.findAllReport();
+        List<CommentForm> commentData = commentService.commentAllReport();
         // 画面遷移先を指定
         mav.setViewName("/top");
         // 投稿データオブジェクトを保管
         mav.addObject("contents", contentData);
+        mav.addObject("comments", commentData);
         return mav;
     }
 
@@ -100,27 +102,21 @@ public class ForumController {
     }
 
     /*
-     * 返信表示処理
-     */
-    @GetMapping
-    public ModelAndView commentContent(@PathVariable Integer messageId) {
-        ModelAndView mav = new ModelAndView();
-        // 返信する投稿を取得
-        CommentForm comment = commentService.commentReport(messageId);
-        // 返信する投稿をセット
-        mav.addObject("formModel", comment);
-        // rootへリダイレクト
-        return new ModelAndView("redirect:/");
-    }
-
-    /*
      * 返信投稿処理
      */
-    @PostMapping("/comment/{messageId}")
+    @PostMapping("/reply/{messageId}")
     public ModelAndView replyContent(@PathVariable Integer messageId,
-                                     @ModelAttribute("formModel") ReportForm report) {
+                                     @ModelAttribute("formModel") CommentForm report) {
+        //@PathVariableで動的な値を取得
+        //@ModelAttributeでHttpリクエストのパラメータ(フォームデータなど)を
+        //Javaのオブジェクトに自動変換し、コントローラーや画面(ビュー)と
+        //受け渡しを行うためのアノテーション
+
+        ModelAndView mav = new ModelAndView();
+        //Controller上でFormにセット
+        CommentForm comment = commentService.replyReport(messageId);
         // 投稿をテーブルに格納
-        commentService.replyReport(messageId);
+        mav.addObject("formModel", comment);
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }

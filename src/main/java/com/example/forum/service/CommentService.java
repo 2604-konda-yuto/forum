@@ -1,7 +1,6 @@
 package com.example.forum.service;
 
 import com.example.forum.controller.form.CommentForm;
-import com.example.forum.controller.form.ReportForm;
 import com.example.forum.repository.CommentRepository;
 import com.example.forum.repository.entity.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +15,38 @@ public class CommentService {
     CommentRepository commentRepository;
 
     /*
-     * 返信内容表示処理
+     * 返信全件取得処理
      */
-    public CommentForm commentReport(Integer messageId) {
-        List<Comment> comments = commentRepository.findAllByOrderByIdAsc();
-        return commentReport(messageId);
+    public List<CommentForm> commentAllReport() {
+        List<Comment> results = commentRepository.findAllByOrderByIdAsc();
+        List<CommentForm> comments = setCommentForm(results);
+        return comments;
+    }
+
+    /*
+     * DBから取得したデータをFormに設定
+     */
+    private List<CommentForm> setCommentForm(List<Comment> results) {
+        List<CommentForm> comments = new ArrayList<>();
+
+        for (int i = 0; i < results.size(); i++) {
+            CommentForm comment = new CommentForm();
+            Comment result = results.get(i);
+            comment.setId(result.getId());
+            comment.setContent(result.getContent());
+            comments.add(comment);
+        }
+        return comments;
     }
 
     /*
      * 返信処理
      */
     public CommentForm replyReport(Integer messageId) {
-        List<Comment> results = new ArrayList<>();
-        results.add(commentRepository.findById(messageId));
-        List<CommentForm> reports = setCommentEntity();
-        return commentReport(messageId);
+        Comment reply = setCommentEntity(replyReport(messageId));
+        //findById キーに該当するレコードを取得
+        commentRepository.findById(messageId);
+        return replyReport(messageId);
     }
 
     /*
