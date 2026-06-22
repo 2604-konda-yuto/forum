@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -35,7 +34,7 @@ public class CommentService {
             Comment result = results.get(i);
             comment.setId(result.getId());
             comment.setContent(result.getContent());
-            comment.setMessageId(result.getMessage_id());
+            comment.setMessageId(result.getMessageId());
             comments.add(comment);
         }
         return comments;
@@ -44,35 +43,30 @@ public class CommentService {
     /*
      * 返信処理
      */
-    public CommentForm replyReport(Integer messageId, Integer id, String content) {
+    public void saveComment(CommentForm report) {
 
         //Repositoryに探しに行った結果を詰める
-        Comment results = commentRepository.findById();
+        Comment results = setCommentEntity(report);
 
-        //上記をComment replyに詰め替え
-        Comment reply = results;
-
-        //l.27から取り出す
-        CommentForm form = setCommentForm(results);
+        Comment saveResult = commentRepository.save(results);
 
         //他必要な情報をセットする
-        form.setId(id);
-        form.setContent(content);
-        form.setMessageId(messageId);
-
-        return form;
+        CommentForm form = new CommentForm();
+        form.setId(saveResult.getId());
+        form.setContent(saveResult.getContent());
+        form.setMessageId(saveResult.getMessageId());
 
     }
 
     /*
      * リクエストから取得した情報をEntityに設定
      */
-//    private Comment setCommentEntity(CommentForm reqReport) {
-//        Comment comment = new Comment();
-//        comment.setId(reqReport.getId());
-//        comment.setContent(reqReport.getContent());
-//        comment.setMessage_id(reqReport.getMessageId());
-//        return comment;
-//    }
+    private Comment setCommentEntity(CommentForm reqReport) {
+        Comment comment = new Comment();
+        comment.setId(reqReport.getId());
+        comment.setContent(reqReport.getContent());
+        comment.setMessageId(reqReport.getMessageId());
+        return comment;
+    }
 
 }

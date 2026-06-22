@@ -24,7 +24,7 @@ public class Report {
     @Column
     private String content;
 
-    @Column(name = "created_date", insertable = true, updatable = false)
+    @Column(name = "created_date", insertable = false, updatable = false)
     private Date created_date;
 
     @Column(name = "updated_date", insertable = false, updatable = false)

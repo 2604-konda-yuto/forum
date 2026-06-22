@@ -31,17 +31,17 @@
             </a>
         </div>
         <div class="comment-button">
+            <form th:method="post" th:action="@{/reply/{messageId}(messageId=${content.id})}" th:object="${formModel}">
+                <div class="form-area">
+                    <textarea class="tweet-box" th:field="*{content}" size="20" maxlength="200" /></textarea><br/>
+                    <input type="submit" value="返信" />
+                </div>
+            </form>
             <div th:each="comment : ${comments}">
                 <div th:if="${comment.messageId == content.id}">
-                    <form th:method="post" th:action="@{/reply/{messageId}(messageId=${comment.message_id})}" th:object="${formModel}">
-                        <div class="form-area">
-                            <textarea class="tweet-box" th:field="*{content}" size="20" maxlength="200" /></textarea><br/>
-                            <input type="submit" value="返信" />
-                        </div>
-                    </form>
                     <form action="/comment">
                         <div>
-                            ID : <span th:text="${comment.id}"></span>
+                            ID : <span th:text="${comment.id}"/>
                         </div>
                         <div class="text">
                             返信 : <span th:text="${comment.content}"/>

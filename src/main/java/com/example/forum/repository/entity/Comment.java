@@ -20,9 +20,9 @@ public class Comment {
     private String content;
 
     @Column
-    private int message_id;
+    private int messageId;
 
-    @Column(name = "created_date", insertable = true,updatable = false)
+    @Column(name = "created_date", insertable = false,updatable = false)
     private Date created_date;
 
     @Column(name = "updated_date", insertable = false,updatable = false)

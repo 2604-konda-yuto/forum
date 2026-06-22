@@ -33,6 +33,8 @@ public class ForumController {
         // 投稿データオブジェクトを保管
         mav.addObject("contents", contentData);
         mav.addObject("comments", commentData);
+        // 準備した空のFormを保管
+        mav.addObject("formModel", new CommentForm());
         return mav;
     }
 
@@ -106,7 +108,7 @@ public class ForumController {
      * 返信投稿処理
      */
     @PostMapping("/reply/{messageId}")
-    public ModelAndView replyContent(@PathVariable Integer messageId, Integer id, String content,
+    public ModelAndView replyContent(@PathVariable Integer messageId,
                                      @ModelAttribute("formModel") CommentForm report) {
         //@PathVariableで動的な値を取得
         //@ModelAttributeでHttpリクエストのパラメータ(フォームデータなど)を
@@ -115,7 +117,9 @@ public class ForumController {
 
         ModelAndView mav = new ModelAndView();
         //Controller上でFormにセット
-        CommentForm comment = commentService.replyReport(messageId, id, content);
+
+        report.setMessageId(messageId);
+        commentService.saveComment(report);
         // 投稿をテーブルに格納
         mav.addObject("formModel", report);
         // rootへリダイレクト
