@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -17,8 +18,9 @@ public class ReportService {
     /*
      * レコード全件取得処理
      */
-    public List<ReportForm> findAllReport() {
+    public List<ReportForm> findAllReport(String startDate, String endDate) {
         List<Report> results = reportRepository.findAllByOrderByIdDesc();
+        List<Report> findByCreatedDateBetween(startDate);
         List<ReportForm> reports = setReportForm(results);
         return reports;
     }

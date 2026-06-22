@@ -10,6 +10,13 @@
     <h1>匿名掲示板</h1>
 </div>
 <div class="main-contents">
+    <form method="get" action="@{/}">
+        日付
+        <input type="date" name="start" value="startDate">
+        <input type="date" name="end" value="endDate">
+        <input type="submit" value="絞込">
+    </form>>
+    <br />
     <a href="/new">
         <button class="new-button" type="button">新規投稿</button>
     </a>
@@ -19,6 +26,9 @@
         </div>
         <div class="text">
             投稿 : <span th:text="${content.content}"/>
+        </div>
+        <div class="text">
+            作成日 : <span th:text="${content.createdDate}"/>
         </div>
         <div class="delete-button">
             <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
@@ -39,14 +49,24 @@
             </form>
             <div th:each="comment : ${comments}">
                 <div th:if="${comment.messageId == content.id}">
-                    <form action="/comment">
+                    <div class="comment-item">
                         <div>
                             ID : <span th:text="${comment.id}"/>
                         </div>
                         <div class="text">
                             返信 : <span th:text="${comment.content}"/>
                         </div>
-                    </form>
+                        <div class="deleteComment-button">
+                            <form th:action="@{/deleteComment/{id}(id=${comment.id})}" th:method="delete">
+                                <input type="submit" value="削除">
+                            </form>
+                        </div>
+                        <div class="editComment-button">
+                            <a th:href="@{/editComment/{id}(id=${comment.id})}">
+                                <input type="button" value="編集">
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
