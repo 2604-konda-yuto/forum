@@ -12,6 +12,6 @@ public class CommentForm {
     private int id;
     private String content;
     private int messageId;
-    private Date created_date;
-    private Date updated_date;
+    private Date createdDate;
+    private Date updatedDate;
 }

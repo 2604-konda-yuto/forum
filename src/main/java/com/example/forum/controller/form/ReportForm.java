@@ -11,6 +11,6 @@ public class ReportForm {
 
     private int id;
     private String content;
-    private Date created_date;
-    private Date updated_date;
+    private Date createdDate;
+    private Date updatedDate;
 }

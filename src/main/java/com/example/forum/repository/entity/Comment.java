@@ -22,9 +22,11 @@ public class Comment {
     @Column
     private int messageId;
 
-    @Column(name = "created_date", insertable = false,updatable = false)
-    private Date created_date;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_date", insertable = true,updatable = true)
+    private Date createdDate;
 
-    @Column(name = "updated_date", insertable = false,updatable = false)
-    private Date updated_date;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_date", insertable = true,updatable = true)
+    private Date updatedDate;
 }

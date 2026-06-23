@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -20,7 +21,7 @@ public class CommentService {
      * 返信全件取得処理
      */
     public List<CommentForm> commentAllReport() {
-        List<Comment> results = commentRepository.findAllByOrderByIdAsc();
+        List<Comment> results = commentRepository.findAllByOrderByUpdatedDateDesc();
         List<CommentForm> comments = setCommentForm(results);
         return comments;
     }
@@ -37,6 +38,8 @@ public class CommentService {
             comment.setId(result.getId());
             comment.setContent(result.getContent());
             comment.setMessageId(result.getMessageId());
+            comment.setCreatedDate(result.getCreatedDate());
+            comment.setUpdatedDate(result.getUpdatedDate());
             comments.add(comment);
         }
         return comments;
@@ -68,6 +71,20 @@ public class CommentService {
         comment.setId(reqReport.getId());
         comment.setContent(reqReport.getContent());
         comment.setMessageId(reqReport.getMessageId());
+
+        Date now = new Date();
+        if (reqReport.getId() > 0) {
+            Comment update = commentRepository.findById(reqReport.getId()).orElse(null);
+            if (update != null) {
+                comment.setCreatedDate(update.getCreatedDate());
+            } else {
+                comment.setCreatedDate(now);
+            }
+            comment.setUpdatedDate(now);
+        } else {
+            comment.setCreatedDate(now);
+            comment.setUpdatedDate(now);
+        }
         return comment;
     }
 

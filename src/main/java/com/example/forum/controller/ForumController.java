@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Controller
@@ -23,7 +24,7 @@ public class ForumController {
      */
     @GetMapping
     public ModelAndView top(@RequestParam(name="startDate", required=false)String startDate,
-                            @RequestParam(name="endDate", required=false)String endDate) {
+                            @RequestParam(name="endDate", required=false)String endDate) throws ParseException {
         ModelAndView mav = new ModelAndView();
         // 投稿を全件取得
         List<ReportForm> contentData = reportService.findAllReport(startDate, endDate);
@@ -31,6 +32,8 @@ public class ForumController {
         // 画面遷移先を指定
         mav.setViewName("/top");
         // 投稿データオブジェクトを保管
+        mav.addObject("startDate", startDate);
+        mav.addObject("endDate", endDate);
         mav.addObject("contents", contentData);
         mav.addObject("comments", commentData);
         // 準備した空のFormを保管
