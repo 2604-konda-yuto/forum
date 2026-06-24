@@ -14,4 +14,5 @@ public class CommentForm {
     private int messageId;
     private Date createdDate;
     private Date updatedDate;
+
 }

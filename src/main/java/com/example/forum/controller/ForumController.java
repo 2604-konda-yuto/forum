@@ -6,11 +6,15 @@ import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class ForumController {
@@ -60,7 +64,28 @@ public class ForumController {
      * 新規投稿処理
      */
     @PostMapping("/add")
-    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
+    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm,
+                                   BindingResult bindingResult,
+                                   RedirectAttributes redirectAttributes){
+
+        // 💡 手動で未入力チェックを行い、BindingResultにエラーを登録する
+        if (reportForm.getContent() == null || reportForm.getContent().isBlank()) {
+            // 第1引数: フィールド名("content"), 第2引数: エラーコード(任意), 第3引数: 表示メッセージ
+            bindingResult.rejectValue("content", "empty", "投稿内容を入力してください");
+        }
+
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+
+            //エラーメッセージをセッションに格納
+            redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
+            redirectAttributes.addFlashAttribute("formModel", reportForm);
+
+            return new ModelAndView("redirect:/new");
+        }
+
         // 投稿をテーブルに格納
         reportService.saveReport(reportForm);
         // rootへリダイレクト
@@ -84,12 +109,14 @@ public class ForumController {
     @GetMapping("/edit/{id}")
     public ModelAndView editContent(@PathVariable Integer id) {
         ModelAndView mav = new ModelAndView();
-        // 編集する投稿を取得
-        ReportForm report = reportService.editReport(id);
-        // 編集する投稿をセット
-        mav.addObject("formModel", report);
+
         // 画面遷移先を指定
         mav.setViewName("/edit");
+        // DBの値で上書きせずにセッションから届いた値をそのまま画面に渡す
+        if (!mav.getModel().containsKey("formModel")) {
+            ReportForm report = reportService.editReport(id);
+            mav.addObject("formModel", report);
+        }
         return mav;
     }
 
@@ -98,7 +125,29 @@ public class ForumController {
      */
     @PutMapping("/update/{id}")
     public ModelAndView updateContent (@PathVariable Integer id,
-                                       @ModelAttribute("formModel") ReportForm report) {
+                                       @ModelAttribute("formModel") ReportForm report,
+                                       BindingResult bindingResult,
+                                       RedirectAttributes redirectAttributes) {
+
+        // 💡 手動で未入力チェックを行い、BindingResultにエラーを登録する
+        if (report.getContent() == null || report.getContent().isBlank()) {
+            // 第1引数: フィールド名("content"), 第2引数: エラーコード(任意), 第3引数: 表示メッセージ
+            bindingResult.rejectValue("content", "empty", "投稿内容を入力してください");
+        }
+
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+
+            //エラーメッセージをセッションに格納
+            redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
+            report.setId(id);
+            redirectAttributes.addFlashAttribute("formModel", report);
+
+            return new ModelAndView("redirect:/edit/" + id);
+        }
+
         // UrlParameterのidを更新するentityにセット
         report.setId(id);
         // 編集した投稿を更新
@@ -112,11 +161,34 @@ public class ForumController {
      */
     @PostMapping("/reply/{messageId}")
     public ModelAndView replyContent(@PathVariable Integer messageId,
-                                     @ModelAttribute("formModel") CommentForm report) {
+                                     @ModelAttribute("formModel") CommentForm report,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes) {
         //@PathVariableで動的な値を取得
         //@ModelAttributeでHttpリクエストのパラメータ(フォームデータなど)を
         //Javaのオブジェクトに自動変換し、コントローラーや画面(ビュー)と
         //受け渡しを行うためのアノテーション
+
+        // 💡 手動で未入力チェックを行い、BindingResultにエラーを登録する
+        if (report.getContent() == null || report.getContent().isBlank()) {
+            // 第1引数: フィールド名("content"), 第2引数: エラーコード(任意), 第3引数: 表示メッセージ
+            bindingResult.rejectValue("content", "empty", "コメントを入力してください");
+        }
+
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+
+            //エラーメッセージをセッションに格納
+            redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
+            redirectAttributes.addFlashAttribute("reportId", messageId);
+
+            report.setMessageId(messageId);
+            redirectAttributes.addFlashAttribute("formModel", report);
+
+            return new ModelAndView("redirect:/");
+        }
 
         ModelAndView mav = new ModelAndView();
         //Controller上でFormにセット
@@ -148,7 +220,28 @@ public class ForumController {
      */
     @PutMapping("/updateComment/{id}")
     public ModelAndView updateCommentContent (@PathVariable Integer id,
-                                       @ModelAttribute("formModel") CommentForm report) {
+                                              @ModelAttribute("formModel") CommentForm report,
+                                              BindingResult bindingResult,
+                                              RedirectAttributes redirectAttributes) {
+
+        // 💡 手動で未入力チェックを行い、BindingResultにエラーを登録する
+        if (report.getContent() == null || report.getContent().isBlank()) {
+            // 第1引数: フィールド名("content"), 第2引数: エラーコード(任意), 第3引数: 表示メッセージ
+            bindingResult.rejectValue("content", "empty", "コメントを入力してください");
+        }
+
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+
+            //エラーメッセージをセッションに格納
+            redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
+            report.setId(id);
+            redirectAttributes.addFlashAttribute("formModel", report);
+
+            return new ModelAndView("redirect:/editComment/" + id);
+        }
         // UrlParameterのidを更新するentityにセット
         report.setId(id);
         // 編集した投稿を更新

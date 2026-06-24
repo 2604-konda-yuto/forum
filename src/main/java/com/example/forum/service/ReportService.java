@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.springframework.data.jpa.domain.AbstractAuditable_.createdDate;
-
 @Service
 public class ReportService {
     @Autowired

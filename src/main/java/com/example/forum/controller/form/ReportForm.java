@@ -13,4 +13,5 @@ public class ReportForm {
     private String content;
     private Date createdDate;
     private Date updatedDate;
+
 }
